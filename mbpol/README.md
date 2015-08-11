@@ -1,13 +1,14 @@
 MB-pol is described here: <http://pubs.acs.org/doi/abs/10.1021/ct500079y>
 
-To use MB-pol: 
-1. Go to the mbpol subdirectory and build `libmbpol.a` [adjust the Makefile
+To use MB-pol:
+
+1. Go to the mbpol subdirectory and build `libmbpol.a` [adjust the `Makefile`
    as needed]; by default the `Makefile` uses intel compiler and compiles a
    thread safe version, this is going to take some time and memory and produce
    `libmbpol.a`
 
 2. Fortran/C++ linkage examples are in the corresponding sub-folders
-   (you may need to adjust the compiler flags); by default the Makefile uses intel 
+   (you may need to adjust the compiler flags); by default the `Makefile` uses intel 
    compiler.
 
 
