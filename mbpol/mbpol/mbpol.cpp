@@ -22,7 +22,8 @@
 
 namespace {
 
-const double E1max = 100.0; // kcal/mol
+//Changed after publication. Old value 100kcal/mol (too high). 
+const double E1max =  60.0; // kcal/mol
 
 }
 
