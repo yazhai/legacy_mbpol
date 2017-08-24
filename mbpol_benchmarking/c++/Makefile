@@ -1,6 +1,6 @@
 CXX = icpc
 CXXFLAGS = -xHost -fopenmp -std=c++11
-LIBFOLD = ../mbpol_icpc_xHost
+LIBFOLD = ../mbpol
 CPPFLAGS = -I. -I$(LIBFOLD)
 LDFLAGS = -xHost -fopenmp -std=c++11
 GSL_FLAGS =  -lgsl -lgslcblas
