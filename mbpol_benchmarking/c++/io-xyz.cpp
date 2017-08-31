@@ -38,9 +38,9 @@ void load_xyz(std::istream&             is,
               std::vector<std::string>& elements,
               std::vector<double>&      xyz)
 {
-    comment.clear();
-    elements.clear();
-    xyz.clear();
+    //comment.clear();
+    //elements.clear();
+    //xyz.clear();
 
     std::string line;
     std::getline(is, line);
@@ -52,8 +52,8 @@ void load_xyz(std::istream&             is,
     std::istringstream iss(line);
     iss >> natoms;
 
-    xyz.reserve(3*natoms);
-    elements.reserve(natoms);
+    //xyz.reserve(3*natoms);
+    //elements.reserve(natoms);
 
     std::getline(is, comment);
 

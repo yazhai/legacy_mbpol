@@ -4,6 +4,7 @@
 
 #include <cmath>
 #include <cassert>
+#include<iomanip>
 
 #define non_VERBOSE 1
 
@@ -19,7 +20,9 @@
 #include "x3b-v2x.h"
 #include "x2b-dispersion.h"
 
-#include <chrono>
+#include <omp.h>
+#include "../c++/timestamps.h"
+#include "../c++/globalvar.h"
 
 using namespace std;
 
@@ -58,33 +61,51 @@ double mbpol::operator()(size_t nw, const double* pos) const
 
     double Eelec(0), Eind(0), Edisp(0), E2poly(0), E3poly(0);
 
-    chrono::time_point<chrono::high_resolution_clock> starttm, endtm;
-    long long int totaltime=0;     
-        
-    
-
     if (good) {
-        m_ttm4(nw, pos, Eelec, 0, Eind, 0);
 
+// initialize a timer for E_poly
+
+        int threadid = 0;
+
+#ifdef _OPENMP        
+        threadid = omp_get_thread_num();
+#endif        
+        unsigned long long int timerid=0; 
+        timers_t & timers_this_thread = alltimers[threadid];
+
+        timers_this_thread.insert_random_timer(timerid,threadid,"m_ttm4");         
+        timers_this_thread.timer_start(timerid);                          
+        m_ttm4(nw, pos, Eelec, 0, Eind, 0);
+        timers_this_thread.timer_end(timerid);
+        
         for (size_t i = 0; i < nw; ++i) {
             const size_t i9 = 9*i;
 
             for (size_t j = i + 1; j < nw; ++j) {
                 const size_t j9 = 9*j;
+                              
+                timers_this_thread.insert_random_timer(timerid,threadid,"E_disp");
+                timers_this_thread.timer_start(timerid);
                 Edisp += x2b_dispersion::eval(pos + i9, pos + j9);
-                
-                
-                starttm = chrono::high_resolution_clock::now();
+                timers_this_thread.timer_end(timerid);
+               
+                timers_this_thread.insert_random_timer(timerid,threadid,"E_2poly");            
+                timers_this_thread.timer_start(timerid);
                 E2poly += x2b_v9x::eval(pos + i9, pos + j9);
-                endtm = chrono::high_resolution_clock::now();
-                totaltime += (long long int)chrono::duration_cast<chrono::microseconds>(endtm-starttm).count();                 
+                timers_this_thread.timer_end(timerid);
+                             
 
                 for (size_t k = j + 1; k < nw; ++k) {
                     const size_t k9 = 9*k;
+             
+                    timers_this_thread.insert_random_timer(timerid,threadid,"E_3poly");                     
+                    timers_this_thread.timer_start(timerid);  
                     E3poly += x3b_v2x::eval(pos + i9, pos + j9, pos + k9);
+                    timers_this_thread.timer_end(timerid);
+                                        
                 }
             }
-        }
+        }                       
     } // good
 
 #   ifdef VERBOSE

@@ -1,5 +1,5 @@
 CXX = icpc
-CXXFLAGS = -xHost  -fopenmp -std=c++11
+CXXFLAGS = -xHost -fopenmp -std=c++11
 
 AR = /usr/bin/ar
 
@@ -9,10 +9,13 @@ MBPOL_OBJ = libmbpol.o \
             ttm4-es.o ttm4-smear.o gammq.o tang-toennies.o ps.o \
             x2b-dispersion.o x2b-v9x.o x3b-v2x.o mbpol.o
 
-all: libmbpol.a
+all: test libmbpol.a
 
 libmbpol.a: $(MBPOL_OBJ)
 	$(AR) cru libmbpol.a $(MBPOL_OBJ)
 
 clean:
 	rm -f *.a *.o
+
+test:
+	rm -f  mbpol.o x2b-v9x.o

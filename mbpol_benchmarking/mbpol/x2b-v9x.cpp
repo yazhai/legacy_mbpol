@@ -1,12 +1,18 @@
 #include <cmath>
 #include <algorithm>
 #include <iostream>
-#include <chrono>
 
 #include "x2b-v9x.h"
 #include "poly-2b-v6x.h"
 
+#include <omp.h>
+#include "../c++/timestamps.h"
+#include "../c++/globalvar.h"
+
+
 using namespace std;
+
+
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -1462,17 +1468,21 @@ double x2b_v9x::eval(const double* w1, const double* w2)
     v[29] = ctxt[29].v_exp(d0_inter, k_XX_main, xcrd, Xa2, Xb1);
     v[30] = ctxt[30].v_exp(d0_inter, k_XX_main, xcrd, Xa2, Xb2);
     
-    chrono::time_point<chrono::high_resolution_clock> starttm, endtm;
-    long long int totaltime=0;     
-    starttm = chrono::high_resolution_clock::now();
-     
-    const double E_poly = poly_2b_v6x::eval(thefit, v);
 
-    endtm = chrono::high_resolution_clock::now();
-    totaltime += (long long int)chrono::duration_cast<chrono::microseconds>(endtm-starttm).count();     
+// initialize a timer for E_poly
+     int threadid = 0;
+#ifdef _OPENMP        
+     threadid = omp_get_thread_num();
+#endif     
+     unsigned long long int timerid; 
     
-    cout << " Run time of this water dimer (no grad) is [ms] : " << totaltime <<endl;
+    timers_t & timers_this_thread = alltimers[threadid];
     
+                    
+    timers_this_thread.insert_random_timer(timerid,threadid,"E_poly");
+    timers_this_thread.timer_start(timerid);       
+    const double E_poly = poly_2b_v6x::eval(thefit, v);
+    timers_this_thread.timer_end(timerid);
     
     // the switch
 
