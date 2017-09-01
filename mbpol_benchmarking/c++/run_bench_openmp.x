@@ -4,13 +4,13 @@ exefile="./test-openmp"
 inpfile="2b.xyz"
 logfile="runtime.log"
 outfile="runtime_statistics.out"
-omp_thread_list=(1 8)
-itr_each_thread=1
-interested_labels="E_poly   E_2poly  E_main  E_nogrd"  # interested timer sequence, separated by space
+omp_thread_list=(1 2 4 8 16 24)         # Num of threads that wo
+itr_each_thread=10                      #
+interested_labels="E_poly   E_2poly  E_nogrd  E_grd"  # interested timer labels, separated by space
 
 
 
-rm -f ${logfile}
+rm -f ${logfile} ${outfile}
 
 
 ## run bench with different threads
@@ -47,10 +47,6 @@ BEGIN{
           printf ( "    MEAN       MIN       MAX |")>> utfile;
      }
      printf ( "\n" )>> utfile;
-
-     ##printf ( "   [ms]    |             E_poly          |        E_2poly                     \n"  );
-     ##printf ( " OMP_THRDS |    MEAN       MIN       MAX |                                    \n"  );
-     ##printf ( "    2      |     317  11111308       327 |                                    \n"  );     
 }
 
 $1~/OMP_NUM_THREADS/ {      
@@ -58,7 +54,12 @@ $1~/OMP_NUM_THREADS/ {
           printf ( "%6d     |", omp_threads)  >> utfile;
           for ( i=1; i<=nfds; i++ ) {
                var = fd_mtx[i];
-               printf ( "%8.2g  %8.2g  %8.2g |", time_mtx[var]/count[var]  , minT_mtx[var], maxT_mtx[var]  )>> utfile;
+               if (count[var] != 0){
+                    ave = time_mtx[var]/count[var];
+               } else {
+                    ave = 0
+               }               
+               printf ( "%8.2g  %8.2g  %8.2g |", ave , minT_mtx[var], maxT_mtx[var]  )>> utfile;
           }
           printf ( "\n" ) >> utfile;                    
      } else {
@@ -84,7 +85,12 @@ END{
      printf ( "%6d     |", omp_threads)  >> utfile;
      for ( i=1; i<=nfds; i++ ) {
           var = fd_mtx[i];
-          printf ( "%8.2g  %8.2g  %8.2g |", time_mtx[var]/count[var]  , minT_mtx[var], maxT_mtx[var]  )>> utfile;
+          if (count[var] != 0){
+               ave = time_mtx[var]/count[var];
+          } else {
+               ave = 0
+          }
+          printf ( "%8.2g  %8.2g  %8.2g |", ave , minT_mtx[var], maxT_mtx[var]  )>> utfile;
      }
      printf ( "\n" ) >> utfile;
 }' $logfile
