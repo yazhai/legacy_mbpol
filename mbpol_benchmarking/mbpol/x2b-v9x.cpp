@@ -1474,11 +1474,10 @@ double x2b_v9x::eval(const double* w1, const double* w2)
 #ifdef _OPENMP        
      threadid = omp_get_thread_num();
 #endif     
-     unsigned long long int timerid; 
+    timerid_t timerid; 
     
     timers_t & timers_this_thread = alltimers[threadid];
-    
-                    
+                        
     timers_this_thread.insert_random_timer(timerid,threadid,"E_poly");
     timers_this_thread.timer_start(timerid);       
     const double E_poly = poly_2b_v6x::eval(thefit, v);

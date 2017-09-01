@@ -40,15 +40,18 @@ struct compare_by_label {
 };
 
 
-typedef unsigned long long int id;
+typedef unsigned long long int timerid_t;
 
 
 // Timer collection class, ready for use by external calls. 
 class timers_t {
 private:
-     std::map<id, timestamp> timers_list;   // A map container saving all timers that can be identified by a unique unsigned long long int id.
+     std::map<timerid_t, timestamp> timers_list;   // A map container saving all timers that can be identified by a unique unsigned long long int id.
      std::set<timestamp, compare_by_label> timecollections;      // Collection container accumulating the time span in all timers. 
                                                                  // Use thread and label to distinguish each other.
+                                                                 
+     timerid_t internal_random_id;                                                                 
+                                                                 
 public:     
      
      timers_t();
@@ -56,16 +59,16 @@ public:
      timers_t(const timers_t& that);
 
 // Following functions are used to deal with a timer according to its unique id:     
-     bool insert_timer(id _id, int threadid=0, std::string _label="");  // Insert a timer by a specific id
-     void insert_random_timer(id & _id, int threadid=0, std::string _label=""); // Insert a timer with a random id, which is returned as reference.
-     bool timer_start(id _id);  // Start a timer.
-     bool timer_end(id _id, bool ifadd=true, bool ifsave=false);      // End a timer. 
+     bool insert_timer(timerid_t _id, int threadid=0, std::string _label="");  // Insert a timer by a specific id
+     void insert_random_timer(timerid_t & _id, int threadid=0, std::string _label=""); // Insert a timer with a random id, which is returned as reference.
+     bool timer_start(timerid_t _id);  // Start a timer.
+     bool timer_end(timerid_t _id, bool ifadd=true, bool ifsave=false);      // End a timer. 
                                                                       // IFADD  : the recorded time span will be added to the timecollection
                                                                       // IFSAVE : the timer will be saved in the timers_list (default: the timer will be removed)
 // Get timer information based on the id:
-     long long int get_time_span(id _id);
-     int get_thread_id(id _id);
-     std::string get_label(id _id);
+     long long int get_time_span(timerid_t _id);
+     timerid_t get_thread_id(timerid_t _id);
+     std::string get_label(timerid_t _id);
      
 
 // Helper function to get timers info:     
@@ -75,7 +78,7 @@ public:
      void get_time_collections();
      
 // Add time to collection according to thread and label
-     bool add_time(id _id);     
+     bool add_time(timerid_t _id);     
           
 };
 

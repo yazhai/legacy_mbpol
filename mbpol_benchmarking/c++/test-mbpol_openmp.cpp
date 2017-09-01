@@ -6,6 +6,7 @@
 #include <stdexcept>
 #include <omp.h>
 #include <vector>
+#include <time.h>
 
 #include "io-xyz.h"
 #include "xyz-water-utils.h"
@@ -21,6 +22,7 @@ vector<timers_t> alltimers;
 
 int main(int argc, char** argv)
 {
+     //srand(time(NULL));
     if (argc != 2) {
         std::cerr << "usage: test-mbpol water.xyz"
                   << std::endl;
@@ -69,7 +71,7 @@ int main(int argc, char** argv)
 #endif
 for(int ii=0; ii<(elements_all.size()/6); ii++)
 {        
-         unsigned long long int timerid;
+         timerid_t timerid;
          int threadid=0;
 #ifdef _OPENMP        
          threadid = omp_get_thread_num();
@@ -95,7 +97,7 @@ for(int ii=0; ii<(elements_all.size()/6); ii++)
          
          // Insert a timer and record its threadid and label. Return by reference the unique id.
          // The id is needed with the start and end timer functions are called.
-         timers_this_thread.insert_random_timer(timerid,threadid,"E_grd");         
+         timers_this_thread.insert_random_timer(timerid,threadid,"E_grd");   
          timers_this_thread.timer_start(timerid); 
          double E = pot(nw, &(crd[0]), grd);
          timers_this_thread.timer_end(timerid);
@@ -105,6 +107,33 @@ for(int ii=0; ii<(elements_all.size()/6); ii++)
          timers_this_thread.timer_start(timerid);
          double E_nogrd = pot(nw, &(crd[0]));
          timers_this_thread.timer_end(timerid);
+         
+         /*
+         // A part for testing the runtime of timer functions
+         timerid_t randins, ins, startid, stopid;
+         timers_this_thread.insert_random_timer(randins,threadid,"Test_Random_Insert");
+         timers_this_thread.timer_start(randins);
+         timers_this_thread.insert_random_timer(timerid,threadid);
+         timers_this_thread.timer_end(randins);
+         
+         timers_this_thread.insert_random_timer(ins,threadid,"Test_Fix_Insert");
+         timers_this_thread.timer_start(ins);
+         timers_this_thread.insert_timer(1, threadid);
+         timers_this_thread.timer_end(ins);
+         
+         timers_this_thread.insert_random_timer(startid,threadid,"Test_Start");
+         timers_this_thread.timer_start(startid);
+         timers_this_thread.timer_start(timerid);
+         timers_this_thread.timer_end(startid);
+         
+         timers_this_thread.insert_random_timer(stopid,threadid,"Test_End");
+         timers_this_thread.timer_start(stopid);
+         timers_this_thread.timer_end(timerid);
+         timers_this_thread.timer_end(stopid);
+         */
+         
+         
+         
        
 /*
 #ifdef _OPENMP                            
@@ -157,6 +186,7 @@ for(int ii=0; ii<(elements_all.size()/6); ii++)
      for(int ii=0; ii<alltimers.size(); ii++){
            timers_t & timer = alltimers[ii];
            timer.get_time_collections();
+           //timer.get_all_timers_info();
      }
 
 

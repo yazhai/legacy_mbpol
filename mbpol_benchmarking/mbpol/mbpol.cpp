@@ -70,13 +70,13 @@ double mbpol::operator()(size_t nw, const double* pos) const
 #ifdef _OPENMP        
         threadid = omp_get_thread_num();
 #endif        
-        unsigned long long int timerid=0; 
+        timerid_t timerid=0; 
         timers_t & timers_this_thread = alltimers[threadid];
 
-        timers_this_thread.insert_random_timer(timerid,threadid,"m_ttm4");         
-        timers_this_thread.timer_start(timerid);                          
+        //timers_this_thread.insert_random_timer(timerid,threadid,"m_ttm4");         
+        //timers_this_thread.timer_start(timerid);                          
         m_ttm4(nw, pos, Eelec, 0, Eind, 0);
-        timers_this_thread.timer_end(timerid);
+        //timers_this_thread.timer_end(timerid);
         
         for (size_t i = 0; i < nw; ++i) {
             const size_t i9 = 9*i;

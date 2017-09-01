@@ -8,7 +8,9 @@
 
 using namespace std;
 
-timestamp::timestamp(int _threadid, std::string _label):timespan(0), threadid(_threadid),label(_label){};
+timestamp::timestamp(int _threadid, std::string _label): threadid(_threadid),label(_label){
+     timespan=0;
+};
 timestamp::~timestamp(){};
 timestamp::timestamp(const timestamp& that){
     start=that.start;
@@ -41,8 +43,10 @@ void timestamp::stampend(){
 
 
 timers_t::timers_t(){
+     //srand(time(NULL));
      timers_list.clear();
      timecollections.clear();
+     internal_random_id=1000;  // 0~999 : reserved id. Internal random ID starts from 1000. 
 }
 
 timers_t::~timers_t(){
@@ -59,35 +63,32 @@ timers_t::timers_t(const timers_t& that){
      for(auto item : that.timecollections){
           timecollections.insert(item);
      }
+     internal_random_id=that.internal_random_id;
 }
 
 
-
-
 // insert a timer into the list with a given unique ID
-bool timers_t::insert_timer(id _id, int _threadid, string _label){
+bool timers_t::insert_timer(timerid_t _id, int _threadid, string _label){
      if (timers_list.find(_id)==timers_list.end()) {          
-          timestamp stamp(_threadid,_label);
-          timers_list.insert({_id, stamp});        
+          timestamp stamp(_threadid,_label);                             
+          timers_list.insert({_id, stamp});          
           return true;
      }
      return false;
 }  
 
 // insert a timer into the list with a random ID, and return with this id.
-void timers_t::insert_random_timer(id & id, int _threadid, std::string _label){
-     srand(time(NULL));
-     id=0;
-     bool ifinsert;
-     do {
-          id = rand() % ULLONG_MAX;  
-          ifinsert = this->insert_timer(id, _threadid, _label);         
-     } while (!ifinsert);
+void timers_t::insert_random_timer(timerid_t & id, int _threadid, std::string _label){
+     for(bool ifinsert=false; !(ifinsert); ) {
+          internal_random_id++;
+          ifinsert = insert_timer(internal_random_id, _threadid, _label);     
+     }
+     id = internal_random_id;
      return;
 }
 
 
-bool timers_t::timer_start(id _id){
+bool timers_t::timer_start(timerid_t _id){
      if (timers_list.find(_id)==timers_list.end()) {
           return false;
      }
@@ -96,7 +97,7 @@ bool timers_t::timer_start(id _id){
 }
 
 
-bool timers_t::timer_end(id _id, bool ifadd, bool ifsave){
+bool timers_t::timer_end(timerid_t _id, bool ifadd, bool ifsave){
      if (timers_list.find(_id)==timers_list.end()) {
           return false;
      }
@@ -112,21 +113,21 @@ bool timers_t::timer_end(id _id, bool ifadd, bool ifsave){
 }
 
 
-long long int timers_t::get_time_span(id _id){
+long long int timers_t::get_time_span(timerid_t _id){
      if (timers_list.find(_id)==timers_list.end()) {
           return 0;
      }
      return timers_list[_id].timespan;
 }
 
-int timers_t::get_thread_id(id _id){
+timerid_t timers_t::get_thread_id(timerid_t _id){
      if (timers_list.find(_id)==timers_list.end()) {
           return 0;
      }
      return timers_list[_id].threadid;
 }
 
-string timers_t::get_label(id _id){
+string timers_t::get_label(timerid_t _id){
      if (timers_list.find(_id)==timers_list.end()) {
           return 0;
      }
@@ -165,7 +166,7 @@ void timers_t::get_time_collections(){
      }
 };
 
-bool timers_t::add_time(id _id){
+bool timers_t::add_time(timerid_t _id){
      timestamp& target = timers_list[_id];
      auto findtarget = timecollections.find(target);
      if ( findtarget == timecollections.end()){

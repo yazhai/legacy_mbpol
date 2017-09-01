@@ -2,17 +2,17 @@
 
 exefile="./test-openmp"
 inpfile="2b.xyz"
+##inpfile="test.xyz"
 logfile="runtime.log"
 outfile="runtime_statistics.out"
-omp_thread_list=(1 2 4 8 16 24)         # Num of threads that wo
-itr_each_thread=10                      #
+omp_thread_list=(1 2 4 8 16 24)         # Num of omp_threads list
+##omp_thread_list=(2)
+itr_each_thread=10                      # Num of repeating runs for every omp_thread configuration
 interested_labels="E_poly   E_2poly  E_nogrd  E_grd"  # interested timer labels, separated by space
-
+##interested_labels="Test_Random_Insert  Test_Fix_Insert  Test_Start  Test_End"  # interested timer labels, separated by space
 
 
 rm -f ${logfile} ${outfile}
-
-
 ## run bench with different threads
 
 for ((j=0; j<${#omp_thread_list[@]} ; j++ ))
@@ -20,6 +20,7 @@ do
      omp_thread=${omp_thread_list[j]}
      export OMP_NUM_THREADS=${omp_thread}
      echo "OMP_NUM_THREADS =" $OMP_NUM_THREADS   >> $logfile
+     echo "Running program with OMP THREADS" ${omp_thread_list[j]} 
      for ((i=1; i<=$itr_each_thread; i++))
      do
           echo "Iteration No. = "  $i >> $logfile
