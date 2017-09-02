@@ -1,25 +1,25 @@
 # Benchmarking the function obtaining the potential energy in 4d polynomial 
 
 ## General
-This sub-branch is to benchmark the run-time cost of the function that calculates the potential energy of a water dimer in 4d polynomial.
-There are four inserted timers by default trying to time these functions: 
+This sub-branch is to benchmark the run-time cost of the functions that are involved in calculating the potential energy of a water dimer in 4d polynomial.
+There are four timers, which try to time these functions: 
    - function `E_poly = poly_2b_v6x::eval()` in `mbpol\x2b-v9x.cpp:x2b_v9x::eval`
    - function `E2poly += x2b_v9x::eval()` in `mbpol\mbpol.cpp:mbpol::operator()`
    - function `E = pot(nw, crd, grd);` in `c++\test-mbpol_openmp.cpp:main()`
    - function `E_nogrd = pot(nw, crd);` in `c++\test-mbpol_openmp.cpp:main()`  
      
-The code is designed valid for OPENMP parallel programming
+The code is designed valid for OPENMP parallel computing.
 
-A tester (test-mbpol_openmp.cpp) is provided with OPENMP-enabled.  
-The tester reads in a total of 42508 sample dimers from file `2b.xyz`, sets up the above timers, and run the 4d_poly program with all dimers.   
-Coming along with the tester, a bash script is used to configue threads for OPENMP and to make the run time statistics.
+A tester (`test-mbpol_openmp.cpp`) is provided (OPENMP-enabled).
+The tester reads in a total of 42508 sample dimers from file `2b.xyz`, sets up the above timers, and runs the 4d_poly program with all dimers.   
+Coming along with the tester, a bash script is used to configue threads for OPENMP and to do the run time statistics.
 
 
 ## Timer class
-The timer class is in files `c++\timestamp.h/cpp`  
+The timer class is in the files `c++\timestamp.h/cpp`  
 To use a timer, follow these steps:  
-   - `timers_t timers` to declare a timer class instance
-   - `timerid_t id` to declare an `id` as type `timerid_t`. `id` represents the unique ID for each timer.
+   - Declare a timer collection instance : `timers_t timers`
+   - Declare a unique ID for each timer : `timerid_t id`
    - Initialize a timer:
       - `timers.insert_random_timer(id, threadid=0, label="")` to initialize a timer. The `id` will be returned via reference. 
       - or, one may `timers.insert_timer(id, threadid=0, label="")` to initialize a timer with a specific id(=0~999)
@@ -29,7 +29,7 @@ To use a timer, follow these steps:
    - End a timer: `timers.end_timer(id, ifadd=true, ifsave=false)`
       - `bool ifadd[=true]` sets if the metered time will be cumulatively added. Only timers with the same `threadid` and `label` will be added cumulatively.
       - `bool ifsave[=false]` sets if the timer will be deleted after the end call.
-   - Show the cumulative time: `timers.get_time_collections()` will print out the cumulative time, `threadid`, and `label`.
+   - Show the cumulative time: `timers.get_time_collections()` will print out the cumulative time with its `threadid`, and `label`.
    - Show all saved timers: `timers.get_all_timers_info()` 
 
 
