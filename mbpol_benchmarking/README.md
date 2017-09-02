@@ -51,21 +51,15 @@ To use a timer, follow these steps:
         - Output statistics shows an average/min/max run time of each function on each thread.
 
 ## Runtime result example: 
+
  Statistics of function runtime in [ms] for one thread :  
-
-| Nothing | E_poly          |            E_2poly          |             E_nogrd         |  
-
-
-
-
-
-
-| OMP_THRDS |    MEAN       MIN       MAX |    MEAN       MIN       MAX |    MEAN       MIN       MAX |  
-| --------- | :-------------------------: | :-------------------------: | :-------------------------: |   
-|     1     | 2.2e+05   1.8e+05   2.5e+05 | 2.7e+05   2.4e+05     3e+05 | 8.2e+05   7.8e+05   8.5e+05 |  
-|     2     | 1.2e+05   9.4e+04   1.3e+05 | 1.5e+05   1.3e+05   1.6e+05 | 4.3e+05   4.1e+05   4.6e+05 |  
-|     4     | 5.9e+04     5e+04     7e+04 | 7.4e+04   6.4e+04   8.5e+04 | 2.2e+05     2e+05   2.5e+05 |  
-|     8     | 3.3e+04   2.5e+04     5e+04 | 4.2e+04   3.3e+04   6.2e+04 | 1.3e+05   1.1e+05   1.8e+05 |  
-|    16     | 1.8e+04   1.3e+04     3e+04 | 2.3e+04   1.6e+04   3.7e+04 | 6.9e+04   5.4e+04   1.1e+05 |  
-|    24     | 1.4e+04   9.4e+03   2.9e+04 | 1.8e+04   1.1e+04   3.5e+04 | 5.2e+04   3.8e+04     1e+05 |  
+ 
+| OMP_THRDS |   E_poly  MEAN  |      E_2poly   MEAN  |     E_nogrd    MEAN    | 
+| --------- | ------- | ------- | ------- |
+|     1     | 2.2e+05  |2.7e+05 | 8.2e+05 |  
+|     2     | 1.2e+05  | 1.5e+05  | 4.3e+05 | 
+|     4     | 5.9e+04  |  7.4e+04 | 2.2e+05  |  
+|     8     | 3.3e+04  | 4.2e+04 | 1.3e+05 |   
+|    16     | 1.8e+04  |2.3e+04 |  6.9e+04 | 
+|    24     | 1.4e+04  | 1.8e+04 | 5.2e+04 | 
 
