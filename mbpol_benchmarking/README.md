@@ -50,7 +50,8 @@ To use a timer, follow these steps:
         - Default repeated runs for each OPENMP thread is set to 10
         - Output statistics shows an average/min/max run time of each function on each thread.
 
-## Runtime result example: 
+## Runtime result: 
+The following test is run on Skylate with intel compiler `icpc -fopenmp -xHost` configuration
 
  Statistics of function runtime in [ms] for one thread :  
  
