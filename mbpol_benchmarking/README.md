@@ -53,7 +53,7 @@ To use a timer, follow these steps:
 ## Runtime result: 
 The following test is run on Skylate with intel compiler `icpc -fopenmp -xHost` configuration
 
- Statistics of function runtime in [ms] for one thread :  
+ Statistics of function runtime in [&mu;s] for one thread :  
  
 | OMP_THRDS |   E_poly  MEAN  |      E_2poly   MEAN  |     E_nogrd    MEAN    | 
 | --------- | ------- | ------- | ------- |
