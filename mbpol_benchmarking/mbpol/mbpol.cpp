@@ -117,7 +117,7 @@ double mbpol::operator()(size_t nw, const double* pos) const
               << std::endl;
 #   endif /* VERBOSE */
     
-    //cout << " Run time of this water dimer (no grad) is [ms] : " << totaltime <<endl;
+    //cout << " Run time of this water dimer (no grad) is [MuS] : " << totaltime <<endl;
     
     return E1 + Eelec + Eind + Edisp + E2poly + E3poly;
 }

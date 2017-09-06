@@ -24,7 +24,7 @@ do
      for ((i=1; i<=$itr_each_thread; i++))
      do
           echo "Iteration No. = "  $i >> $logfile
-          ${exefile} ${inpfile} >> ${logfile}
+          time ${exefile} ${inpfile} >> ${logfile}
      done
 done
 
@@ -37,7 +37,7 @@ BEGIN{
      omp_threads=0;
      first_time=1;        
      
-     printf ( " Statistics of function runtime in [ms] for one thread :\n           |") > utfile ;
+     printf ( " Statistics of function runtime in [MuS] for one thread :\n           |") > utfile ;
     
      for (i=1; i<=nfds; i++){
           pos = int( (30 + length(fd_mtx[i]))/2 );

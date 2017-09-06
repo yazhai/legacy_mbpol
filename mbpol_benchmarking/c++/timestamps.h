@@ -12,7 +12,7 @@
 struct timestamp {
      std::chrono::time_point<std::chrono::high_resolution_clock> start, end;
      std::string label;
-     mutable long long int timespan;  // In [ms] unit
+     mutable long long int timespan;  // In [MuS] unit
      int threadid;
      
      timestamp(int id=0, std::string label="");

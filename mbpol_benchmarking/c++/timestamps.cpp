@@ -161,7 +161,7 @@ void timers_t::get_time_collections(){
      for(auto itr = timecollections.begin(); itr != timecollections.end(); itr++) {
           cout << " Thread= " << setw(3) << itr->threadid 
                << "    Label= " << setw(10) << itr->label
-               << "    Time[ms]= " << setw(15) << itr->timespan
+               << "    Time[MuS]= " << setw(15) << itr->timespan
                << endl;
      }
 };
