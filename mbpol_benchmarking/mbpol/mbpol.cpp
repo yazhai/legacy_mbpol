@@ -142,6 +142,15 @@ double mbpol::operator()(size_t nw, const double* pos, double* grd) const
     }
 
     if (good) {
+
+        int threadid = 0;
+    
+#ifdef _OPENMP        
+        threadid = omp_get_thread_num();
+#endif        
+        timerid_t timerid=0; 
+        timers_t & timers_this_thread = alltimers[threadid];    
+    
         double Eelec(0), Eind(0), gEelec[9*nw], gEind[9*nw];
 
         m_ttm4(nw, pos, Eelec, gEelec, Eind, gEind);
@@ -158,7 +167,7 @@ double mbpol::operator()(size_t nw, const double* pos, double* grd) const
                 
                 timers_this_thread.insert_random_timer(timerid,threadid,"E_2bwgrd");            
                 timers_this_thread.timer_start(timerid);                
-                Etot += x2b_v9x::eval(pos + i9, pos + j9, grd + i9, grd + j9)
+                Etot += x2b_v9x::eval(pos + i9, pos + j9, grd + i9, grd + j9);
                 timers_this_thread.timer_end(timerid);
                 
                 
