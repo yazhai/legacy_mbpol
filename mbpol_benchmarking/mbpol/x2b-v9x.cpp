@@ -1478,10 +1478,10 @@ double x2b_v9x::eval(const double* w1, const double* w2)
     
     timers_t & timers_this_thread = alltimers[threadid];
                         
-    timers_this_thread.insert_random_timer(timerid,threadid,"E_poly");
-    timers_this_thread.timer_start(timerid);       
+    //timers_this_thread.insert_random_timer(timerid,threadid,"E_2bogrd_polycorefn");
+    //timers_this_thread.timer_start(timerid);       
     const double E_poly = poly_2b_v6x::eval(thefit, v);
-    timers_this_thread.timer_end(timerid);
+    //timers_this_thread.timer_end(timerid);
     
     // the switch
 
@@ -1590,7 +1590,11 @@ double x2b_v9x::eval
     v[30] = ctxt[30].v_exp(d0_inter, k_XX_main, xcrd, Xa2, Xb2);
 
     double g[31];
+    
+    //timers_this_thread.insert_random_timer(timerid,threadid,"E_2bwgrd_polycorefn");
+    //timers_this_thread.timer_start(timerid);           
     const double E_poly = poly_2b_v6x::eval(thefit, v, g);
+    //timers_this_thread.timer_end(timerid);    
 
     double xgrd[30];
     std::fill(xgrd, xgrd + 30, 0.0);

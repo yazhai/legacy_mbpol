@@ -9,6 +9,10 @@
 #include "x3b-v2x.h"
 #include "poly-3b-v2x.h"
 
+#include <omp.h>
+#include "../c++/timestamps.h"
+#include "../c++/globalvar.h"
+
 ////////////////////////////////////////////////////////////////////////////////
 
 namespace {
@@ -1356,8 +1360,12 @@ double x3b_v2x::eval(const double* w1,
     x[34] = var(kOO, dOO,  Oa,  Oc);
     x[35] = var(kOO, dOO,  Ob,  Oc);
 
-    double retval = poly_3b_v2x::eval(thefit, x);
 
+    //timers_this_thread.insert_random_timer(timerid,threadid,"E_3bogrd_polycorefn");
+    //timers_this_thread.timer_start(timerid);       
+    double retval = poly_3b_v2x::eval(thefit, x);
+    //timers_this_thread.timer_end(timerid);    
+    
     return s*retval;
 }
 
@@ -1456,7 +1464,11 @@ double x3b_v2x::eval(const double* w1,
     x[35] = var(kOO, dOO,  Ob,  Oc);
 
     double g[36];
+    
+    //timers_this_thread.insert_random_timer(timerid,threadid,"E_3bwgrd_polycorefn");
+    //timers_this_thread.timer_start(timerid);         
     double retval = poly_3b_v2x::eval(thefit, x, g);
+    //timers_this_thread.timer_end(timerid);       
 
     for (int n = 0; n < 36; ++n)
         g[n] *= s;

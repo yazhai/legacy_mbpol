@@ -89,7 +89,7 @@ double mbpol::operator()(size_t nw, const double* pos) const
                 Edisp += x2b_dispersion::eval(pos + i9, pos + j9);
                 //timers_this_thread.timer_end(timerid);
                
-                timers_this_thread.insert_random_timer(timerid,threadid,"E_2poly");            
+                timers_this_thread.insert_random_timer(timerid,threadid,"E_2bogrd");            
                 timers_this_thread.timer_start(timerid);
                 E2poly += x2b_v9x::eval(pos + i9, pos + j9);
                 timers_this_thread.timer_end(timerid);
@@ -97,10 +97,10 @@ double mbpol::operator()(size_t nw, const double* pos) const
 
                 for (size_t k = j + 1; k < nw; ++k) {
                     const size_t k9 = 9*k;             
-                    //timers_this_thread.insert_random_timer(timerid,threadid,"E_3poly");                     
-                    //timers_this_thread.timer_start(timerid);  
+                    timers_this_thread.insert_random_timer(timerid,threadid,"E_3bogrd");                     
+                    timers_this_thread.timer_start(timerid);  
                     E3poly += x3b_v2x::eval(pos + i9, pos + j9, pos + k9);
-                    //timers_this_thread.timer_end(timerid);
+                    timers_this_thread.timer_end(timerid);
                                         
                 }
             }
@@ -155,14 +155,23 @@ double mbpol::operator()(size_t nw, const double* pos, double* grd) const
 
             for (size_t j = i + 1; j < nw; ++j) {
                 const size_t j9 = 9*j;
+                
+                timers_this_thread.insert_random_timer(timerid,threadid,"E_2bwgrd");            
+                timers_this_thread.timer_start(timerid);                
                 Etot += x2b_v9x::eval(pos + i9, pos + j9, grd + i9, grd + j9)
-                      + x2b_dispersion::eval(pos + i9, pos + j9,
+                timers_this_thread.timer_end(timerid);
+                
+                
+                Etot += x2b_dispersion::eval(pos + i9, pos + j9,
                                              grd + i9, grd + j9);
 
                 for (size_t k = j + 1; k < nw; ++k) {
                     const size_t k9 = 9*k;
+                    timers_this_thread.insert_random_timer(timerid,threadid,"E_3bwgrd");            
+                    timers_this_thread.timer_start(timerid);                         
                     Etot += x3b_v2x::eval(pos + i9, pos + j9, pos + k9,
                                           grd + i9, grd + j9, grd + k9);
+                    timers_this_thread.timer_end(timerid);                                          
                 }
             }
         }
