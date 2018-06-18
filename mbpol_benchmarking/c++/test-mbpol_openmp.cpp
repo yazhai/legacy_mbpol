@@ -52,7 +52,7 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::cout<<"natom = "<<natoms << std::endl;
+    std::cout<<"Total number of molecular=" << elements_all.size()/natoms << std::endl;
     
      
     int num_threads=1; 
