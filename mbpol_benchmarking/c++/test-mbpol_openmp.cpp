@@ -33,6 +33,7 @@ int main(int argc, char** argv)
      
     std::vector< std::string > elements_all;
     std::vector< double      > crd_all;
+    size_t natoms=6;
 
     // Read out all records at once and save them to the vector containers.
     try {
@@ -44,12 +45,14 @@ int main(int argc, char** argv)
         std::string comment;
         
         while (!ifs.eof()) {
-             kit::io::load_xyz(ifs, comment, elements_all, crd_all);
+             kit::io::load_xyz(ifs, comment, elements_all, crd_all, natoms);
         }
     } catch (const std::exception& e) {
         std::cerr << " ** Error ** : " << e.what() << std::endl;
         return 1;
     }
+
+    std::cout<<"natom = "<<natoms << std::endl;
     
      
     int num_threads=1; 
@@ -69,7 +72,7 @@ int main(int argc, char** argv)
 #pragma omp barrier
 #pragma omp for 
 #endif
-for(int ii=0; ii<(elements_all.size()/6); ii++)
+for(int ii=0; ii<(elements_all.size()/natoms); ii++)
 {        
          timerid_t timerid;
          int threadid=0;
@@ -82,28 +85,35 @@ for(int ii=0; ii<(elements_all.size()/6); ii++)
          std::vector< std::string > elements;         
          std::vector< double      > crd;
 
-         for(int jj=0; jj<6; jj++){      
-               elements.push_back(elements_all[ii*6+jj]);                                           
-               crd.push_back(crd_all[ii*18+jj*3  ]) ;
-               crd.push_back(crd_all[ii*18+jj*3+1]) ;
-               crd.push_back(crd_all[ii*18+jj*3+2]) ;               
-         }
+         //for(int jj=0; jj<6; jj++){      
+         //      elements.push_back(elements_all[ii*6+jj]);                                           
+         //      crd.push_back(crd_all[ii*18+jj*3  ]) ;
+         //      crd.push_back(crd_all[ii*18+jj*3+1]) ;
+         //      crd.push_back(crd_all[ii*18+jj*3+2]) ;               
+         //}
+
+	for(int jj=0; jj<natoms; jj++){
+		elements.push_back(elements_all[ii*natoms+jj]);
+		crd.push_back(crd_all[ii*natoms*3+jj*3  ]) ;
+		crd.push_back(crd_all[ii*natoms*3+jj*3+1]) ;
+		crd.push_back(crd_all[ii*natoms*3+jj*3+2]) ;
+	}
 
          const size_t nw = elements.size()/3;
 
          x2o::mbpol pot;     
           
-         double grd[9*nw];
+         double grd[9*nw]; // where does 9 come from?
          
          // Insert a timer and record its threadid and label. Return by reference the unique id.
          // The id is needed with the start and end timer functions are called.
-         timers_this_thread.insert_random_timer(timerid,threadid,"E_grd");   
+         timers_this_thread.insert_random_timer(timerid,threadid,"E(PIP)w/grd");   
          timers_this_thread.timer_start(timerid); 
          double E = pot(nw, &(crd[0]), grd);
          timers_this_thread.timer_end(timerid);
          
 
-         timers_this_thread.insert_random_timer(timerid,threadid,"E_nogrd");
+         timers_this_thread.insert_random_timer(timerid,threadid,"E(PIP)w/ogrd");
          timers_this_thread.timer_start(timerid);
          double E_nogrd = pot(nw, &(crd[0]));
          timers_this_thread.timer_end(timerid);

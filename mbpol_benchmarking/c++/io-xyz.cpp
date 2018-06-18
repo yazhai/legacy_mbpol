@@ -36,7 +36,8 @@ void save_xyz(std::ostream&                   os,
 void load_xyz(std::istream&             is,
               std::string&              comment,
               std::vector<std::string>& elements,
-              std::vector<double>&      xyz)
+              std::vector<double>&      xyz,
+	      size_t&			natoms)
 {
     //comment.clear();
     //elements.clear();
@@ -48,7 +49,6 @@ void load_xyz(std::istream&             is,
     if (is.eof())
         return;
 
-    size_t natoms;
     std::istringstream iss(line);
     iss >> natoms;
 
