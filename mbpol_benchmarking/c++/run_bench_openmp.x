@@ -1,14 +1,15 @@
 #!/bin/bash
 
 exefile="./test-openmp"
-inpfile="2b.xyz"
+inpfile="3b.xyz"
+##inpfile="2b.xyz"
 ##inpfile="test.xyz"
 logfile="runtime.log"
 outfile="runtime_statistics.out"
 omp_thread_list=(1 2 4 8 16 24 32 48)         # Num of omp_threads list
 ##omp_thread_list=(2)
 itr_each_thread=10                      # Num of repeating runs for every omp_thread configuration
-interested_labels="E_2bogrd  E_3bogrd  E_nogrd  E_2bwgrd  E_3bwgrd  E_grd"  # interested timer labels, separated by space
+interested_labels="PIP_2Bw/grd PIP_2Bw/ogrd PIP_3Bw/grd PIP_3Bw/ogrd E(PIP)w/grd E(PIP)w/ogrd"  # interested timer labels, separated by space
 ##interested_labels="Test_Random_Insert  Test_Fix_Insert  Test_Start  Test_End"  # interested timer labels, separated by space
 
 
