@@ -10,7 +10,8 @@ namespace kit { namespace io {
 void load_xyz(std::istream&             is,
               std::string&              comment,
               std::vector<std::string>& elements, // clears the original
-              std::vector<double>&      xyz);     // clears the original
+              std::vector<double>&      xyz,	  // clears the original
+	      size_t&			natoms);  
 
 void save_xyz(std::ostream&                   os,
               const std::string&              comment,
