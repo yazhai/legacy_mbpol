@@ -1,18 +1,34 @@
 CXX = g++
-CXXFLAGS = -O0 
+CXXFLAGS = -O0  
+CXXFLAGS_OPT = -O3 
+CXXFLAGS_STD = -std=c++11
 
 AR = /usr/bin/ar
 
-MBPOL_OBJ = libmbpol.o \
-            poly-2b-v6x.o poly-2b-v6x-nogrd.o \
-            poly-3b-v2x.o poly-3b-v2x-nogrd.o \
-            ttm4-es.o ttm4-smear.o gammq.o tang-toennies.o ps.o \
-            x2b-dispersion.o x2b-v9x.o x3b-v2x.o mbpol.o
+OPT_OBJ = ttm4-es.o ttm4-smear.o gammq.o tang-toennies.o ps.o \
+          x2b-dispersion.o x2b-v9x.o x3b-v2x.o mbpol.o libmbpol.o
 
-all: libmbpol.a
+OPT_SRC = ${OPT_OBJ: .o=.cpp}
 
-libmbpol.a: $(MBPOL_OBJ)
-	$(AR) cru libmbpol.a $(MBPOL_OBJ)
+
+NOOPT_OBJ = poly-2b-v6x.o poly-2b-v6x-nogrd.o \
+             poly-3b-v2x.o poly-3b-v2x-nogrd.o
+
+NOOPT_SRC = ${NOOPT_OBJ: .o=.cpp}
+
+
+
+all: clean libmbpol.a
+
+libmbpol.a: $(OPT_OBJ) $(NOOPT_OBJ)
+	$(AR) cru libmbpol.a $(OPT_OBJ) $(NOOPT_OBJ)
+
+
+$(OPT_OBJ): %.o : %.cpp 
+	${CXX} ${CXXFLAGS_OPT} ${CXXFLAGS_STD} -c $< -o $@
+
+$(NOOPT_OBJ): %.o : %.cpp
+	${CXX} ${CXXFLAGS} ${CXXFLAGS_STD} -c $< -o $@
 
 clean:
 	rm -f *.a *.o

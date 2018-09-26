@@ -1,24 +1,18 @@
 CXX = g++
-CXXFLAGS = -O0
+CXXFLAGS = -O3
 CPPFLAGS = -I. -I../mbpol
-LDFLAGS = -O0
-GSL_FLAGS =  -lgsl -lgslcblas
+LDFLAGS =
 
-all: test-mbpol optimize normal-modes
+all: clean test-mbpol
 
-test-mbpol: test-mbpol.o io-xyz.o xyz-water-utils.o
-	$(CXX) -o test-mbpol test-mbpol.o io-xyz.o xyz-water-utils.o \
-                  ../mbpol/libmbpol.a $(LDFLAGS)
+test-mbpol: test-mbpol_openmp.o io-xyz.o xyz-water-utils.o timestamps.o
+	$(CXX) -o test-mbpol test-mbpol_openmp.o io-xyz.o xyz-water-utils.o timestamps.o \
+                  ../mbpol/libmbpol.a $(LDFLAGS) $(CXXFLAGS)
 
-optimize: optimize.o io-xyz.o xyz-water-utils.o io-utils.o xmin.o
-	$(CXX) -o optimize optimize.o io-xyz.o xyz-water-utils.o \
-	          io-utils.o xmin.o ../mbpol/libmbpol.a $(LDFLAGS)
-
-normal-modes: normal-modes.o io-xyz.o xyz-water-utils.o io-utils.o xmin.o
-	$(CXX) -o normal-modes normal-modes.o io-xyz.o xyz-water-utils.o \
-	          io-utils.o xmin.o ../mbpol/libmbpol.a $(LDFLAGS) $(GSL_FLAGS)
+%.o: %.cpp
+	$(CXX) $(CXXFLAGS) $(CPPFLAGS) -c $< -o $@
 
 clean:
-	rm -f test-mbpol optimize normal-modes *.o
+	rm -f test-mbpol *.o
 
 .PHONY: all clean

@@ -3,10 +3,12 @@
 #include <fstream>
 #include <iomanip>
 #include <iostream>
+#include <stdio.h>
 #include <stdexcept>
 #include <omp.h>
 #include <vector>
 #include <time.h>
+#include <string.h>
 
 #include "io-xyz.h"
 #include "xyz-water-utils.h"
@@ -23,8 +25,8 @@ vector<timers_t> alltimers;
 int main(int argc, char** argv)
 {
      //srand(time(NULL));
-    if (argc != 2) {
-        std::cerr << "usage: test-mbpol water.xyz"
+    if (argc < 2) {
+        std::cerr << "usage: test-mbpol XYZ_FILENAME [2|3 body model, default=2]"
                   << std::endl;
         return 0;
     }
@@ -34,6 +36,9 @@ int main(int argc, char** argv)
     std::vector< std::string > elements_all;
     std::vector< double      > crd_all;
     size_t natoms=6;
+    if (argc ==3){
+          natoms = 3* atoi(argv[2]) ;
+    }
 
     // Read out all records at once and save them to the vector containers.
     try {
@@ -52,8 +57,13 @@ int main(int argc, char** argv)
         return 1;
     }
 
-    std::cout<<"Total number of molecular=" << elements_all.size()/natoms << std::endl;
     
+    size_t nsys = elements_all.size()/natoms;
+    std::cout<<"Total number of molecular=" <<  nsys << std::endl;
+    
+    double* E_grd = new double[nsys];
+    double* E_nogrd = new double[nsys]; 
+    double* grd_all = new double[elements_all.size()*3]; 
      
     int num_threads=1; 
 #ifdef _OPENMP
@@ -72,118 +82,46 @@ int main(int argc, char** argv)
 #pragma omp barrier
 #pragma omp for 
 #endif
-for(int ii=0; ii<(elements_all.size()/natoms); ii++)
+for(int ii=0; ii<(nsys); ii++)
 {        
          timerid_t timerid;
          int threadid=0;
 #ifdef _OPENMP        
          threadid = omp_get_thread_num();
 #endif           
-         timers_t & timers_this_thread = alltimers[threadid];   // Rename `alltimers[threadid]` to `timers_this_thread`
+         timers_t & timers_this_thread = alltimers[threadid];   
          
                   
          std::vector< std::string > elements;         
          std::vector< double      > crd;
 
-         //for(int jj=0; jj<6; jj++){      
-         //      elements.push_back(elements_all[ii*6+jj]);                                           
-         //      crd.push_back(crd_all[ii*18+jj*3  ]) ;
-         //      crd.push_back(crd_all[ii*18+jj*3+1]) ;
-         //      crd.push_back(crd_all[ii*18+jj*3+2]) ;               
-         //}
 
-	for(int jj=0; jj<natoms; jj++){
-		elements.push_back(elements_all[ii*natoms+jj]);
-		crd.push_back(crd_all[ii*natoms*3+jj*3  ]) ;
-		crd.push_back(crd_all[ii*natoms*3+jj*3+1]) ;
-		crd.push_back(crd_all[ii*natoms*3+jj*3+2]) ;
-	}
+	    for(int jj=0; jj<natoms; jj++){
+		     elements.push_back(elements_all[ii*natoms+jj]);
+		     crd.push_back(crd_all[ii*natoms*3+jj*3  ]) ;
+		     crd.push_back(crd_all[ii*natoms*3+jj*3+1]) ;
+		     crd.push_back(crd_all[ii*natoms*3+jj*3+2]) ;
+	    }
 
          const size_t nw = elements.size()/3;
 
          x2o::mbpol pot;     
           
-         double grd[9*nw]; // where does 9 come from?
+         double grd[9*nw]; 
          
          // Insert a timer and record its threadid and label. Return by reference the unique id.
          // The id is needed with the start and end timer functions are called.
          timers_this_thread.insert_random_timer(timerid,threadid,"E(PIP)w/grd");   
          timers_this_thread.timer_start(timerid); 
-         double E = pot(nw, &(crd[0]), grd);
+         E_grd[ii] = pot(nw, &(crd[0]), grd);
          timers_this_thread.timer_end(timerid);
-         
+         memcpy(&(grd_all[ii*9*nw]), &(grd[0]), 9*nw*sizeof(double));
 
          timers_this_thread.insert_random_timer(timerid,threadid,"E(PIP)w/ogrd");
          timers_this_thread.timer_start(timerid);
-         double E_nogrd = pot(nw, &(crd[0]));
+         E_nogrd[ii] = pot(nw, &(crd[0]));
          timers_this_thread.timer_end(timerid);
          
-         /*
-         // A part for testing the runtime of timer functions
-         timerid_t randins, ins, startid, stopid;
-         timers_this_thread.insert_random_timer(randins,threadid,"Test_Random_Insert");
-         timers_this_thread.timer_start(randins);
-         timers_this_thread.insert_random_timer(timerid,threadid);
-         timers_this_thread.timer_end(randins);
-         
-         timers_this_thread.insert_random_timer(ins,threadid,"Test_Fix_Insert");
-         timers_this_thread.timer_start(ins);
-         timers_this_thread.insert_timer(1, threadid);
-         timers_this_thread.timer_end(ins);
-         
-         timers_this_thread.insert_random_timer(startid,threadid,"Test_Start");
-         timers_this_thread.timer_start(startid);
-         timers_this_thread.timer_start(timerid);
-         timers_this_thread.timer_end(startid);
-         
-         timers_this_thread.insert_random_timer(stopid,threadid,"Test_End");
-         timers_this_thread.timer_start(stopid);
-         timers_this_thread.timer_end(timerid);
-         timers_this_thread.timer_end(stopid);
-         */
-         
-         
-         
-       
-/*
-#ifdef _OPENMP                            
-        #pragma omp critical 
-        {
-#endif
-         std::cout << "       E = " << E << "\n"
-                   << "E[nogrd] = " << E_nogrd << std::endl;
-#ifdef _OPENMP               
-        }
-#endif
-*/
-
-// Tester for another part in the code
-    /*      
-         const double eps = 1.0e-4;
-         for (int n = 0; n < 9*nw; ++n) {        
-             
-             double tmp[9*nw];
-             const double x_orig = crd[n];
-
-             crd[n] = x_orig + eps;
-             const double Ep = pot(nw, &(crd[0]), tmp);
-
-             crd[n] = x_orig - eps;
-             const double Em = pot(nw, &(crd[0]), tmp);
-
-             const double gfd = 0.5*(Ep - Em)/eps;
-             crd[n] = x_orig;        
-          
-     //        std::cout << grd[n] << ' ' << gfd << '\n';
-             //std::cout << n << ' ' << std::fabs(grd[n] - gfd) << '\n';
-            
-         }    
-     */
-
-     //#pragma omp critical
-     //{
-          //alltimers.get_all_timers_info();
-     //}   
 }  
 
 
@@ -193,14 +131,36 @@ for(int ii=0; ii<(elements_all.size()/natoms); ii++)
 
      // 
 
-     for(int ii=0; ii<alltimers.size(); ii++){
+      for(int ii=0; ii<alltimers.size(); ii++){
            timers_t & timer = alltimers[ii];
            timer.get_time_collections();
            //timer.get_all_timers_info();
-     }
+      }
 
+      std::ifstream infile("E_grd.rst");
+      if( !infile.good() ){
+            std::ofstream ofs1 ("E_grd.rst", std::ofstream::out);
+            std::ofstream ofs2 ("E_nogrd.rst", std::ofstream::out);
+            std::ofstream ofs3 ("grd_all.rst", std::ofstream::out);
+            ofs1 << std::scientific << std::setprecision(16);
+            ofs2 << std::scientific << std::setprecision(16);
+            ofs3 << std::scientific << std::setprecision(16);
+            for(int ii=0; ii<nsys; ii++){
+               ofs1 << E_grd[ii] << std::endl;
+               ofs2 << E_nogrd[ii] << std::endl;
+               for(int jj=0; jj<natoms*3; jj++){
+                    ofs3 << grd_all[ii*natoms*3+jj] << "\t";
+               }
+               ofs3 << std::endl;
+            } 
+            ofs1.close();
+            ofs2.close();
+            ofs3.close();
+      }
 
-
+     delete [] E_grd;
+     delete [] E_nogrd;
+     delete [] grd_all;
 
     return 0;
 }

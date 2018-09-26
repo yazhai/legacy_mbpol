@@ -1,12 +1,12 @@
-CXX = icpc
-CXXFLAGS = -std=c++11 -xHost
+CXX = g++
+CXXFLAGS = -std=c++11 -O3
 LIBFOLD = ../mbpol
 CPPFLAGS = -I. -I$(LIBFOLD)
 LDFLAGS = -fopenmp 
 
-all: clean test-openmp
+all: clean test-mbpol
 
-test-openmp: test-mbpol_openmp.o io-xyz.o xyz-water-utils.o timestamps.o
+test-mbpol: test-mbpol_openmp.o io-xyz.o xyz-water-utils.o timestamps.o
 	$(CXX) -o test-openmp test-mbpol_openmp.o io-xyz.o xyz-water-utils.o timestamps.o \
                   $(LIBFOLD)/libmbpol.a $(CPPFLAGS) $(LDFLAGS) $(CXXFLAGS)
 
