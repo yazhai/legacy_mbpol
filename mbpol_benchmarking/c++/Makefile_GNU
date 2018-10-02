@@ -1,7 +1,7 @@
 CXX = g++
-CXXFLAGS = -O3
+CXXFLAGS = -O3 -std=c++11 
 CPPFLAGS = -I. -I../mbpol
-LDFLAGS =
+LDFLAGS = -fopenmp
 
 all: clean test-mbpol
 
